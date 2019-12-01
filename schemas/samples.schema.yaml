@@ -1,0 +1,19 @@
+$schema: "http://json-schema.org/draft-06/schema#"
+
+description: an entry in the sample sheet
+properties:
+  Sample:
+    type: string
+    description: sample identifier found in the prefix of fastq files
+  Condition:
+    type: string
+    description: condition
+  Name:
+    type: string
+  Description:
+    type: string
+ 
+
+required:
+  - Sample
+  - Condition

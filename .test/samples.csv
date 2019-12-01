@@ -1,0 +1,9 @@
+Sample,Condition,Title,Description
+Day0-sgNT-1-A,Day0_sgNT-1,Day0 sgNT-1,Day 0 keratinocytes infected with non-targeting sgRNA
+Day0-sgNT-1-B,Day0_sgNT-1,,
+Day0-sgBRD9-1-A,Day0_sgBRD9-1,Day0 sgBRD9-1,Day 0 keratinocytes infected with sgRNA targeting BRD9
+Day0-sgBRD9-1-B,Day0_sgBRD9-1,,
+Day3-sgNT-1-A,Day3_sgNT-1,Day3 sgNT-1,Day 3 keratinocytes infected with non-targeting sgRNA
+Day3-sgNT-1-B,Day3_sgNT-1
+Day3-sgBRD9-1-A,Day3_sgBRD9-1,Day0 sgNT-1,Day 0 keratinocytes infected with with sgRNA targeting BRD9
+Day3-sgBRD9-1-B,Day3_sgBRD9-1

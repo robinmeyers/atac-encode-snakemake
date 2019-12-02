@@ -33,16 +33,16 @@ wildcard_constraints:
     sample="[^\/]+"
 
 
-localrules: all, make_json_input, croo_collect_metadata
+localrules: all, make_json_input, croo_collect_metadata, gather_qc
 
 
 condition_list = np.unique(samples["Condition"])
 
 
 def get_target_files(wildcards):
-    target_files = []
+    target_files = ["results/qc.tsv"]
 
-    target_files = target_files + [os.path.join("results", c, "croo_finished") for c in condition_list]
+    # target_files = target_files + [os.path.join("results", c, "croo_finished") for c in condition_list]
 
     return target_files
 
@@ -52,12 +52,19 @@ rule all:
     run:
         print("workflow complete!")
 
+rule gather_qc:
+    input: [os.path.join("results", c, "qc/qc.json") for c in condition_list]
+    output: "results/qc.tsv"
+    # params: lambda (wildcards, input)
+    shell:
+        "qc2tsv {input} > {output}"
+
 
 rule croo_collect_metadata:
     input: "results/{condition}/atac/metadata.json"
-    output: "results/{condition}/croo_finished"
+    output: "results/{condition}/qc/qc.json"
     log: "results/{condition}/croo.log"
-    shell: "croo --out-dir results/{wildcards.condition} {input} > {log} 2>&1 && touch {output}"
+    shell: "croo --out-dir results/{wildcards.condition} {input} > {log} 2>&1"
 
 
 rule run_cromwell_workflow:

@@ -56,7 +56,8 @@ rule all:
 rule croo_collect_metadata:
     input: "results/{condition}/atac/metadata.json"
     output: "results/{condition}/croo_finished"
-    shell: "croo {input} && touch {output}"
+    log: "results/{condition}/croo.log"
+    shell: "croo --out-dir results/{wildcards.condition} {input} > {log} 2>&1 && touch {output}"
 
 
 rule run_cromwell_workflow:
@@ -68,23 +69,41 @@ rule run_cromwell_workflow:
         "> {log} 2>&1"
 
 
-def make_json_from_template(condition, json_out):
+def make_json_from_template(condition, json_out_file):
     json_in = open(config['template_json'], 'r')
     json_out = open(json_out_file, 'w')
-    json_spec = json.load(json_in)
-    # for fastq_dir in config['fastq_dirs']:
-        # for id, row in samples[samples['Sample']==sample].iterrows():
-        # for fastq_dir in config['fastq_dirs']:
-        #     if os.path.isdir(os.path.join(fastq_dir, id))
-    json.dump(json_spec, json_out_file)
+    sample_json = json.load(json_in)
+    rep_i = 1
+    condition_title = ""
+    condition_description = ""
+    for sample, row in samples[samples['Condition']==condition].iterrows():
+        R1_fastqs = []
+        R2_fastqs = []
+        for fastq_dir in config['fastq_dirs']:
+            R1_fastqs = R1_fastqs + \
+                glob.glob(os.path.join(fastq_dir, sample + "_*R1*.fastq.gz")) + \
+                glob.glob(os.path.join(fastq_dir, sample, sample + "_*R1*.fastq.gz"))
+            R2_fastqs = R2_fastqs + \
+                glob.glob(os.path.join(fastq_dir, sample + "_*R2*.fastq.gz")) + \
+                glob.glob(os.path.join(fastq_dir, sample, sample + "_*R2*.fastq.gz"))
+        condition_title = row["Title"] if (condition_title == "" and row["Title"] != "") else condition_title
+        condition_description = row["Description"] if condition_description == "" and row["Description"] != "" else condition_description
+        sample_json['atac.fastqs_rep' + str(rep_i) + '_R1'] = R1_fastqs
+        sample_json['atac.fastqs_rep' + str(rep_i) + '_R2'] = R2_fastqs
+        if condition_title != "":
+            sample_json['atac.title'] = condition_title
+        if condition_description != "":
+            sample_json['atac.description'] = condition_description
+        rep_i += 1
+    json.dump(sample_json, json_out, indent=4)
     json_in.close()
-    json_out.close()
+    # json_out.close()
 
 
 rule make_json_input:
     input:
-    output: "jsons/{condition}.json"
-    run: make_json_from_template(wildcards.condition, output)
+    output: json="jsons/{condition}.json"
+    run: make_json_from_template(wildcards.condition, output.json)
 
 
 

@@ -10,6 +10,7 @@
 !Snakefile
 !schemas
 !schemas/*
+!samples.csv
 !config.yaml
 !sample_template.json
 !cluster.json

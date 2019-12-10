@@ -6,7 +6,13 @@
 
 ## Authors
 
-* Robin Meyers (@robinmeyers)
+* Robin Meyers [@robinmeyers](https://github.com/robinmeyers)
+
+## Purpose
+
+**Under development**
+
+This pipeline acts as a wrapper around the ENCODE ATAC-seq workflow for running multiple samples and gathering QC metrics.
 
 ## Usage
 
@@ -14,18 +20,13 @@
 
 #### Step 1: Install workflow
 
-If you simply want to use this workflow, download and extract the [latest release](https://github.com/robinmeyers/atac-encode-snakemake/releases).
-If you intend to modify and further extend this workflow or want to work under version control, fork this repository as outlined in [Advanced](#advanced).
 
-Clone this repositiory into a directory
+Install the [ATAC workflow](https://github.com/ENCODE-DCC/atac-seq-pipeline) as well as the ```croo``` and ```qc2tsv``` utilities.
 
-```
-$ git clone git@github.com:robinmeyers/atac-encode-snakemake
-```
 
-Install the [ATAC workflow](https://github.com/ENCODE-DCC/atac-seq-pipeline)
+Clone this repositiory and change into the new directory.
 
-Run the snakemake on test data
+Activate the conda environment. Run the snakemake pipeline on provided test data.
 
 ```
 $ conda activate encode-atac-seq-pipeline
@@ -78,21 +79,6 @@ If you installed the workflow by cloning the github repo, you can pull latest up
 This will require you to first commit any changes you made to your configuration file before pulling new updates.
 
 Then simply rerun the `snakemake` command.
-
-### Advanced
-
-The following recipe provides established best practices for running and extending this workflow in a reproducible way.
-
-1. [Fork](https://help.github.com/en/articles/fork-a-repo) the repo to a personal or lab account.
-2. [Clone](https://help.github.com/en/articles/cloning-a-repository) the fork to the desired working directory for the concrete project/run on your machine.
-3. [Create a new branch](https://git-scm.com/docs/gittutorial#_managing_branches) (the project-branch) within the clone and switch to it. The branch will contain any project-specific modifications (e.g. to configuration, but also to code).
-4. Modify the config, and any necessary sheets (and probably the workflow) as needed.
-5. Commit any changes and push the project-branch to your fork on github.
-6. Run the analysis.
-7. Optional: Merge back any valuable and generalizable changes to the [upstream repo](https://github.com/robinmeyers/atac-encode-snakemake) via a [**pull request**](https://help.github.com/en/articles/creating-a-pull-request). This would be **greatly appreciated**.
-8. Optional: Push results (plots/tables) to the remote branch on your fork.
-9. Optional: Create a self-contained workflow archive for publication along with the paper (snakemake --archive).
-10. Optional: Delete the local clone/workdir to free space.
 
 
 ## Testing

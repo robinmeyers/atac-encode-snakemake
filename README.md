@@ -38,7 +38,7 @@ Examine the outputs of the workflow in the directory ```.test/outs/```
 
 #### Step 2: Configure workflow
 
-Configure the workflow according to your needs via editing the file `config.yaml`. This includes the path to the fasta file of reference feature barcodes, the directory of fastq files, location of plasmid library sequencing, and how targets are specified in the names of the features.
+Configure the workflow according to your needs via editing the file `config.yaml`.
 
 #### Step 3: Execute workflow
 
@@ -58,7 +58,7 @@ $ snakemake -n
 $ snakemake -j 999 -p  --cluster-config cluster.json --profile slurm
 ```
 
-Before running in a cluster environment, edit the `cluter.json` config file to use the cluster option syntax `{cluster.<option>}` as seen above.
+Before running in a cluster environment, edit the `cluter.json` config file.
 
 # Step 4: Investigate results
 

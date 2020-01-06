@@ -17,9 +17,14 @@ properties:
   fastq_dirs:
     type: array
 
+  fastq_suffix:
+    type: string
+
             
 required:
   - samplesheet
   - wdl
   - template_json
   - fastq_dirs
+  - fastq_suffix
+  

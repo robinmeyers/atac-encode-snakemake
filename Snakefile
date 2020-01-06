@@ -32,6 +32,9 @@ wildcard_constraints:
     condition="[^\/]+",
     sample="[^\/]+"
 
+r1_fastq_suffix = config['fastq_suffix'].replace('%', '1')
+r2_fastq_suffix = config['fastq_suffix'].replace('%', '2')
+
 
 localrules: all, make_json_input, croo_collect_metadata, gather_qc
 
@@ -88,11 +91,11 @@ def make_json_from_template(condition, json_out_file):
         R2_fastqs = []
         for fastq_dir in config['fastq_dirs']:
             R1_fastqs = R1_fastqs + \
-                glob.glob(os.path.join(fastq_dir, sample + "_*R1*.fastq.gz")) + \
-                glob.glob(os.path.join(fastq_dir, sample, sample + "_*R1*.fastq.gz"))
+                glob.glob(os.path.join(fastq_dir, sample + r1_fastq_suffix)) + \
+                glob.glob(os.path.join(fastq_dir, sample, sample + r1_fastq_suffix))
             R2_fastqs = R2_fastqs + \
-                glob.glob(os.path.join(fastq_dir, sample + "_*R2*.fastq.gz")) + \
-                glob.glob(os.path.join(fastq_dir, sample, sample + "_*R2*.fastq.gz"))
+                glob.glob(os.path.join(fastq_dir, sample + r2_fastq_suffix)) + \
+                glob.glob(os.path.join(fastq_dir, sample, sample + r2_fastq_suffix))
         condition_title = row["Title"] if (condition_title == "" and row["Title"] != "") else condition_title
         condition_description = row["Description"] if condition_description == "" and row["Description"] != "" else condition_description
         sample_json['atac.fastqs_rep' + str(rep_i) + '_R1'] = R1_fastqs

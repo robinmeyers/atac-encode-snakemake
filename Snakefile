@@ -87,24 +87,29 @@ def make_json_from_template(condition, json_out_file):
     condition_description = "All samples combined" if condition == "consensus" else ""
     condition_samples = samples if condition == "consensus" else samples[samples['Condition']==condition]
     for sample, row in condition_samples.iterrows():
+        R1_key = 'atac.fastqs_rep' + str(rep_i) + '_R1'
+        R2_key = 'atac.fastqs_rep' + str(rep_i) + '_R2'
+        sample_json[R1_key] = [] if R1_key not in sample_json.keys() else sample_json[R1_key]
+        sample_json[R2_key] = [] if R2_key not in sample_json.keys() else sample_json[R2_key]
         R1_fastqs = []
         R2_fastqs = []
         for fastq_dir in config['fastq_dirs']:
-            R1_fastqs = R1_fastqs + \
+            sample_json[R1_key] = sample_json[R1_key] + \
                 glob.glob(os.path.join(fastq_dir, sample + r1_fastq_suffix)) + \
                 glob.glob(os.path.join(fastq_dir, sample, sample + r1_fastq_suffix))
-            R2_fastqs = R2_fastqs + \
+            sample_json[R2_key] = sample_json[R2_key] + \
                 glob.glob(os.path.join(fastq_dir, sample + r2_fastq_suffix)) + \
                 glob.glob(os.path.join(fastq_dir, sample, sample + r2_fastq_suffix))
         condition_title = row["Title"] if (condition_title == "" and row["Title"] != "") else condition_title
         condition_description = row["Description"] if condition_description == "" and row["Description"] != "" else condition_description
-        sample_json['atac.fastqs_rep' + str(rep_i) + '_R1'] = R1_fastqs
-        sample_json['atac.fastqs_rep' + str(rep_i) + '_R2'] = R2_fastqs
+        # sample_json['atac.fastqs_rep' + str(rep_i) + '_R1'] = R1_fastqs
+        # sample_json['atac.fastqs_rep' + str(rep_i) + '_R2'] = R2_fastqs
         if condition_title != "":
             sample_json['atac.title'] = condition_title
         if condition_description != "":
             sample_json['atac.description'] = condition_description
-        rep_i += 1
+        if condition != "consensus":
+            rep_i += 1 
     json.dump(sample_json, json_out, indent=4)
     json_in.close()
     # json_out.close()

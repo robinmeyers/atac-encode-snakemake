@@ -39,7 +39,76 @@ r2_fastq_suffix = config['fastq_suffix'].replace('%', '2')
 localrules: all, make_json_input, croo_collect_metadata, gather_qc
 
 
-condition_list = np.unique(samples["Condition"]).tolist() + ["consensus"]
+condition_list = np.unique(samples["Condition"]).tolist()
+
+grouping_list = {}
+
+if "grouping_columns" in config.keys():
+    for grouping in config["grouping_columns"]:
+        grouping_list[grouping] = np.unique(samples[grouping]).tolist()
+
+
+def get_samples(condition, grouping="Condition", use_bioreps=True):
+    biorep = 1
+    
+    if grouping == "Condition":
+        condition_title = ""
+        condition_description = ""
+        condition_samples = samples[samples['Condition']==condition]
+    elif grouping == "Consensus":
+        condition_title = "Consensus"
+        condition_description = "All samples combined"
+        condition_samples = samples
+    else:
+        condition_title = condition
+        condition_description = condition + " samples grouped by " + grouping
+        condition_samples = samples[samples[grouping]==condition]
+
+    condition_dict = {'fastqs' : {}}
+    R1_fastqs = []
+    R2_fastqs = []
+    for sample, row in condition_samples.iterrows():
+
+        for fastq_dir in config['fastq_dirs']:
+            R1_fastqs = R1_fastqs + \
+                glob.glob(os.path.join(fastq_dir, sample + r1_fastq_suffix)) + \
+                glob.glob(os.path.join(fastq_dir, sample, sample + r1_fastq_suffix))
+            R2_fastqs = R2_fastqs + \
+                glob.glob(os.path.join(fastq_dir, sample + r2_fastq_suffix)) + \
+                glob.glob(os.path.join(fastq_dir, sample, sample + r2_fastq_suffix))
+        condition_title = row["Title"] if (condition_title == "" and row["Title"] != "") else condition_title
+        condition_description = row["Description"] if condition_description == "" and row["Description"] != "" else condition_description
+
+        if use_bioreps:
+            condition_dict['fastqs']['rep' + str(biorep)] = {'R1' : R1_fastqs, 'R2' : R2_fastqs}
+            biorep += 1
+            R1_fastqs = []
+            R2_fastqs = []
+
+    condition_dict['title'] = condition_title
+    condition_dict['description'] = condition_description
+    if not use_bioreps:
+        condition_dict['fastqs']['rep1'] = {'R1' : R1_fastqs, 'R2' : R2_fastqs}
+
+
+    return(condition_dict)
+
+
+conditions_dict = {}
+
+for condition in condition_list:
+    conditions_dict[condition] = get_samples(condition)
+for grouping, groups in grouping_list.items():
+    for group in groups:
+        conditions_dict[group] = get_samples(group, grouping=grouping, use_bioreps=False)
+conditions_dict["consensus"] = get_samples("consensus", grouping="Consensus", use_bioreps=False)
+
+
+
+
+
+
+
 
 def get_target_files(wildcards):
     target_files = ["results/qc.tsv"]
@@ -55,7 +124,7 @@ rule all:
         print("workflow complete!")
 
 rule gather_qc:
-    input: [os.path.join("results", c, "qc/qc.json") for c in condition_list]
+    input: [os.path.join("results", c, "qc/qc.json") for c in conditions_dict.keys()]
     output: "results/qc.tsv"
     # params: lambda (wildcards, input)
     shell:
@@ -82,37 +151,17 @@ def make_json_from_template(condition, json_out_file):
     json_in = open(config['template_json'], 'r')
     json_out = open(json_out_file, 'w')
     sample_json = json.load(json_in)
-    rep_i = 1
-    condition_title = "Consensus" if condition == "consensus" else ""
-    condition_description = "All samples combined" if condition == "consensus" else ""
-    condition_samples = samples if condition == "consensus" else samples[samples['Condition']==condition]
-    for sample, row in condition_samples.iterrows():
-        R1_key = 'atac.fastqs_rep' + str(rep_i) + '_R1'
-        R2_key = 'atac.fastqs_rep' + str(rep_i) + '_R2'
-        sample_json[R1_key] = [] if R1_key not in sample_json.keys() else sample_json[R1_key]
-        sample_json[R2_key] = [] if R2_key not in sample_json.keys() else sample_json[R2_key]
-        R1_fastqs = []
-        R2_fastqs = []
-        for fastq_dir in config['fastq_dirs']:
-            sample_json[R1_key] = sample_json[R1_key] + \
-                glob.glob(os.path.join(fastq_dir, sample + r1_fastq_suffix)) + \
-                glob.glob(os.path.join(fastq_dir, sample, sample + r1_fastq_suffix))
-            sample_json[R2_key] = sample_json[R2_key] + \
-                glob.glob(os.path.join(fastq_dir, sample + r2_fastq_suffix)) + \
-                glob.glob(os.path.join(fastq_dir, sample, sample + r2_fastq_suffix))
-        condition_title = row["Title"] if (condition_title == "" and row["Title"] != "") else condition_title
-        condition_description = row["Description"] if condition_description == "" and row["Description"] != "" else condition_description
-        # sample_json['atac.fastqs_rep' + str(rep_i) + '_R1'] = R1_fastqs
-        # sample_json['atac.fastqs_rep' + str(rep_i) + '_R2'] = R2_fastqs
-        if condition_title != "":
-            sample_json['atac.title'] = condition_title
-        if condition_description != "":
-            sample_json['atac.description'] = condition_description
-        if condition != "consensus":
-            rep_i += 1 
+    condition_dict = conditions_dict[condition]
+
+    sample_json['atac.title'] = condition_dict['title']
+    sample_json['atac.description'] = condition_dict['description']
+    for rep in condition_dict['fastqs'].keys():
+        sample_json['atac.fastqs_' + rep + "_R1"] = condition_dict['fastqs'][rep]['R1']
+        sample_json['atac.fastqs_' + rep + "_R2"] = condition_dict['fastqs'][rep]['R2']
+
     json.dump(sample_json, json_out, indent=4)
     json_in.close()
-    # json_out.close()
+
 
 
 rule make_json_input:

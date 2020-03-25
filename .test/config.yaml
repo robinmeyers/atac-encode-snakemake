@@ -8,5 +8,8 @@ template_json: sample_template.json
 fastq_dirs:
   - '/home/rmmeyers/workflows/atac-encode-snakemake/.test/fastqs/'
 
+grouping_columns:
+  - Timepoint
+
 # % will be replaced with the character '1' and '2' for reads 1 and 2 respectively
 fastq_suffix: _*R%*.fastq.gz

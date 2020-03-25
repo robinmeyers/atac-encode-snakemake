@@ -39,8 +39,7 @@ r2_fastq_suffix = config['fastq_suffix'].replace('%', '2')
 localrules: all, make_json_input, croo_collect_metadata, gather_qc
 
 
-condition_list = np.unique(samples["Condition"])
-
+condition_list = np.unique(samples["Condition"]).tolist() + ["consensus"]
 
 def get_target_files(wildcards):
     target_files = ["results/qc.tsv"]
@@ -84,9 +83,10 @@ def make_json_from_template(condition, json_out_file):
     json_out = open(json_out_file, 'w')
     sample_json = json.load(json_in)
     rep_i = 1
-    condition_title = ""
-    condition_description = ""
-    for sample, row in samples[samples['Condition']==condition].iterrows():
+    condition_title = "Consensus" if condition == "consensus" else ""
+    condition_description = "All samples combined" if condition == "consensus" else ""
+    condition_samples = samples if condition == "consensus" else samples[samples['Condition']==condition]
+    for sample, row in condition_samples.iterrows():
         R1_fastqs = []
         R2_fastqs = []
         for fastq_dir in config['fastq_dirs']:

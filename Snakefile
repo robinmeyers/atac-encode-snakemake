@@ -102,7 +102,6 @@ if "grouping_columns" in config.keys():
                 'conditions' : np.unique(samples[samples[grouping]==group]["Condition"]).tolist()
                 }
 
-print(groupings_dict)
 
 def get_target_files(wildcards):
     target_files = ["results/qc.tsv"]
@@ -150,7 +149,7 @@ rule croo_collect_metadata:
 def cromwell_inputs(wildcards):
     inputs = {'json' : os.path.join("jsons", wildcards.is_grouped + wildcards.condition + ".json")}
     if (wildcards.is_grouped):
-        inputs['tagalign'] = os.path.join("results/groups/", wildcards.condition, wildcards.condition + ".input.tagAlign.gz")
+        inputs['tagalign'] = os.path.join("results/groups/", wildcards.condition, wildcards.condition + ".grouped.tagAlign.gz")
     return inputs
 
 rule run_cromwell_workflow:
@@ -198,13 +197,13 @@ def make_grouped_json_from_template(grouping, tagalign_file, json_out_file):
     json_in.close()
 
 rule make_grouped_json_input:
-    input: tagalign="results/groups/{group}/{group}.input.tagAlign.gz"
+    input: tagalign="results/groups/{group}/{group}.grouped.tagAlign.gz"
     output: json="jsons/groups/{group}.json"
     run: make_grouped_json_from_template(wildcards.group, input.tagalign, output.json)
 
 rule merge_grouped_tagalign:
     input: lambda wildcards: [os.path.join("results", c, "align", c + ".tagAlign.gz") for c in groupings_dict[wildcards.group]['conditions']]
-    output: "results/groups/{group}/{group}.input.tagAlign.gz"
+    output: "results/groups/{group}/{group}.grouped.tagAlign.gz"
     shell: "cat {input} > {output}"
 
 

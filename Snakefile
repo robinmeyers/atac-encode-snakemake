@@ -192,6 +192,7 @@ def make_grouped_json_from_template(grouping, tagalign_file, json_out_file):
     sample_json['atac.title'] = group_dict['title']
     sample_json['atac.description'] = group_dict['description']
     sample_json['atac.tas'] = [tagalign_file]
+    sample_json['atac.true_rep_only'] = True
 
     json.dump(sample_json, json_out, indent=4)
     json_in.close()

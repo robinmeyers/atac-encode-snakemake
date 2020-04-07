@@ -10,6 +10,8 @@ template_json: sample_template.json
 fastq_dirs:
   - '/home/rmmeyers/workflows/atac-encode-snakemake/.test/fastqs/'
 
+make_consensus: True
+
 # grouping_columns:
 #   - Timepoint
 

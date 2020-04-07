@@ -67,7 +67,7 @@ def get_samples(condition):
                 glob.glob(os.path.join(fastq_dir, sample + r2_fastq_suffix)) + \
                 glob.glob(os.path.join(fastq_dir, sample, sample + r2_fastq_suffix))
 
-        if condition_paired_end && len(R2_fastqs) == 0:
+        if condition_paired_end and len(R2_fastqs) == 0:
             condition_paired_end = False
         condition_title = row["Title"] if (condition_title == "" and row["Title"] != "") else condition_title
         condition_description = row["Description"] if condition_description == "" and row["Description"] != "" else condition_description

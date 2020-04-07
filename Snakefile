@@ -81,14 +81,16 @@ conditions_dict = {}
 for condition in np.unique(samples["Condition"]).tolist():
     conditions_dict[condition] = get_samples(condition)
 
-
-groupings_dict = {
-    'consensus' : {
-        'title' : "Consensus",
-        'description' : "All samples combined",
-        'conditions' : list(conditions_dict)
+if len(conditions_dict) > 1:
+    groupings_dict = {
+        'consensus' : {
+            'title' : "Consensus",
+            'description' : "All samples combined",
+            'conditions' : list(conditions_dict)
+            }
         }
-    }
+else:
+    groupings_dict = {}
 
 
 
@@ -131,7 +133,7 @@ rule gather_qc:
 
 
 rule collect_tag_align_files:
-    input: "results/{condition}/atac/metadata.json"
+    input: "results/{is_grouped}{condition}/qc/qc.json"
     output: "results/{condition}/align/{condition}.tagAlign.gz"
     shell:
         "cat results/{wildcards.condition}/align/rep*/*.trim.merged.nodup.no_chrM_MT.tn5.tagAlign.gz > {output};"

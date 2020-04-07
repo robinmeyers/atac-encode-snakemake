@@ -51,6 +51,7 @@ def get_samples(condition):
     
     condition_title = ""
     condition_description = ""
+    condition_paired_end = True
     condition_samples = samples[samples['Condition']==condition]
     condition_dict = {'fastqs' : {}}
 
@@ -65,11 +66,15 @@ def get_samples(condition):
             R2_fastqs = R2_fastqs + \
                 glob.glob(os.path.join(fastq_dir, sample + r2_fastq_suffix)) + \
                 glob.glob(os.path.join(fastq_dir, sample, sample + r2_fastq_suffix))
+
+        if condition_paired_end && len(R2_fastqs) == 0:
+            condition_paired_end = False
         condition_title = row["Title"] if (condition_title == "" and row["Title"] != "") else condition_title
         condition_description = row["Description"] if condition_description == "" and row["Description"] != "" else condition_description
         condition_dict['fastqs']['rep' + str(biorep)] = {'R1' : R1_fastqs, 'R2' : R2_fastqs}
         biorep += 1
-        
+    
+    condition_dict['paired_end'] = condition_paired_end
     condition_dict['title'] = condition_title
     condition_dict['description'] = condition_description
 
@@ -172,9 +177,11 @@ def make_json_from_template(condition, json_out_file):
 
     sample_json['atac.title'] = condition_dict['title']
     sample_json['atac.description'] = condition_dict['description']
+    sample_json['atac.paired_end'] = condition_dict['paired_end']
     for rep in condition_dict['fastqs'].keys():
         sample_json['atac.fastqs_' + rep + "_R1"] = condition_dict['fastqs'][rep]['R1']
-        sample_json['atac.fastqs_' + rep + "_R2"] = condition_dict['fastqs'][rep]['R2']
+        if condition_dict['paired_end']:
+            sample_json['atac.fastqs_' + rep + "_R2"] = condition_dict['fastqs'][rep]['R2']
 
     json.dump(sample_json, json_out, indent=4)
     json_in.close()

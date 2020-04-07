@@ -86,7 +86,7 @@ conditions_dict = {}
 for condition in np.unique(samples["Condition"]).tolist():
     conditions_dict[condition] = get_samples(condition)
 
-if len(conditions_dict) > 1 && config['make_consensus']:
+if len(conditions_dict) > 1 and config['make_consensus']:
     groupings_dict = {
         'consensus' : {
             'title' : "Consensus",

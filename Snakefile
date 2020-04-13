@@ -138,7 +138,7 @@ rule gather_qc:
 
 
 rule collect_tag_align_files:
-    input: "results/{is_grouped}{condition}/qc/qc.json"
+    input: "results/{condition}/qc/qc.json"
     output: "results/{condition}/align/{condition}.tagAlign.gz"
     shell:
         "cat results/{wildcards.condition}/align/rep*/*.trim.merged.nodup.no_chrM_MT.tn5.tagAlign.gz > {output};"

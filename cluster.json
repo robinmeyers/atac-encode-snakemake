@@ -10,7 +10,7 @@
 
 
     "run_cromwell_workflow" : {
-        "job_name" : "{wildcards.condition}_atac"
+        "job-name" : "{wildcards.condition}_atac"
     },
 
 }

@@ -164,6 +164,8 @@ rule run_cromwell_workflow:
     input: unpack(cromwell_inputs)
     output: "results/{is_grouped}{condition}/atac/metadata.json"
     log: "results/{is_grouped}{condition}/cromwell.log"
+    resources:
+        mem = "1G"
     shell:
         "caper run {caper_params} {config[wdl]} -i {input.json} --out-dir results/{wildcards.is_grouped}{wildcards.condition} -m {output} "
         "> {log} 2>&1"

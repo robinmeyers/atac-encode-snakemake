@@ -4,13 +4,13 @@
         "account" : "khavari",
         "time" : "4-00:00:00",
         "partition" : "apps_khavari",
-        "mem" : "2gb",
+        "mem" : "1G",
         "output" : "results/cluster_logs/{rule}.{wildcards}.log"
     },
 
 
     "run_cromwell_workflow" : {
-        "job_name" : "{wildcards.condition}_atac"
+        "job-name" : "{wildcards.condition}_atac"
     },
 
 }

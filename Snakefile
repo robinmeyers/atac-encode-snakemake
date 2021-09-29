@@ -184,12 +184,12 @@ rule run_cromwell_workflow:
         """
 caper run {caper_params} {config[wdl]} \
     -i {input.json} \
-    --out-dir {params.outdir}/results/{is_grouped}{condition} \
+    --out-dir {params.outdir}/results/{wildcards.is_grouped}{wildcards.condition} \
     -m {params.outdir}/{output} > {params.outdir}{log} 2>&1
 
 if {params.use_tmpdir}
 then
-    cp -r {params.outdir}/results/{is_grouped}{condition} {params.snakedir}/results/{is_grouped}{condition}
+    cp -r {params.outdir}/results/{wildcards.is_grouped}{wildcards.condition} {params.snakedir}/results/{wildcards.is_grouped}{wildcards.condition}
 fi
 """
 

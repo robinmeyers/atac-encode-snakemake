@@ -3,7 +3,7 @@ samplesheet: samples.csv
 
 wdl: /home/rmmeyers/workflows/atac-seq-pipeline/atac.wdl
 
-# caper_params: "--docker"
+caper_options: "--slurm-partition apps_khavari --slurm-account khavari"
 
 template_json: sample_template.json
 

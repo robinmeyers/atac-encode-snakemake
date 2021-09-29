@@ -176,7 +176,7 @@ rule run_cromwell_workflow:
     params:
         snakedir = os.getcwd(),
         use_tmpdir = "true" if config['use_tmpdir'] else "false",
-        outdir = "$TMPDIR" if config['use_tmpdir'] else "."
+        outdir = "$TMPDIR" if config['use_tmpdir'] else ".",
         # json = lambda wildcards, input: os.path.abspath(input.json)
         # wdl = os.path.abspath(config[wdl]),
         # log = os.path.abspath("results/{is_grouped}{condition}/cromwell.log")
@@ -185,6 +185,7 @@ rule run_cromwell_workflow:
 caper run {caper_params} {config[wdl]} \
     -i {input.json} \
     --out-dir {params.outdir}/results/{wildcards.is_grouped}{wildcards.condition} \
+    --tmp-dir {params.outdir}/results/{wildcards.is_grouped}{wildcards.condition}/tmp \
     -m {params.outdir}/{output} > {params.outdir}{log} 2>&1
 
 if {params.use_tmpdir}

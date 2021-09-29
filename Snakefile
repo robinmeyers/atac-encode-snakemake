@@ -36,7 +36,7 @@ wildcard_constraints:
 r1_fastq_suffix = config['fastq_suffix'].replace('%', '1')
 r2_fastq_suffix = config['fastq_suffix'].replace('%', '2')
 
-caper_params = config['caper_params'] if 'caper_params' in config else ""
+caper_options = config['caper_options'] if 'caper_options' in config else ""
 
 localrules: all, make_json_input, make_grouped_json_input, merge_grouped_tagalign, collect_tag_align_files, croo_collect_metadata, gather_qc
 
@@ -182,7 +182,7 @@ rule run_cromwell_workflow:
         # log = os.path.abspath("results/{is_grouped}{condition}/cromwell.log")
     shell:
         """
-caper run {caper_params} {config[wdl]} \
+caper run {caper_options} {config[wdl]} \
     -i {input.json} \
     --out-dir {params.outdir}/results/{wildcards.is_grouped}{wildcards.condition} \
     --tmp-dir {params.outdir}/results/{wildcards.is_grouped}{wildcards.condition}/tmp \

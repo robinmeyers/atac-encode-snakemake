@@ -17,3 +17,6 @@ make_consensus: True
 
 # % will be replaced with the character '1' and '2' for reads 1 and 2 respectively
 fastq_suffix: _*R%*.fastq.gz
+
+local_main_job: False
+use_tmpdir: False

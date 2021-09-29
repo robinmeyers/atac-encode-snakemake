@@ -41,6 +41,15 @@ caper_params = config['caper_params'] if 'caper_params' in config else ""
 localrules: all, make_json_input, make_grouped_json_input, merge_grouped_tagalign, collect_tag_align_files, croo_collect_metadata, gather_qc
 
 
+
+# Conditionally add rules to the directive 'localrules'
+_localrules = list(workflow._localrules) # get the local rules so far
+
+if config['local_main_job']:
+    _localrules.append('run_cromwell_workflow') # add rules as required
+
+workflow._localrules = set(_localrules) # set the updated local rules
+
 # condition_list = np.unique(samples["Condition"]).tolist()
 
 # grouping_list = {}
@@ -152,8 +161,6 @@ rule croo_collect_metadata:
         "croo --out-dir results/{wildcards.is_grouped}{wildcards.condition} {input} > {log} 2>&1;"
         
 
-
-
 def cromwell_inputs(wildcards):
     inputs = {'json' : os.path.join("jsons", wildcards.is_grouped + wildcards.condition + ".json")}
     if (wildcards.is_grouped):
@@ -166,9 +173,25 @@ rule run_cromwell_workflow:
     log: "results/{is_grouped}{condition}/cromwell.log"
     resources:
         mem = "2G"
+    params:
+        snakedir = os.getcwd(),
+        use_tmpdir = "true" if config['use_tmpdir'] else "false",
+        outdir = "$TMPDIR" if config['use_tmpdir'] else "."
+        # json = lambda wildcards, input: os.path.abspath(input.json)
+        # wdl = os.path.abspath(config[wdl]),
+        # log = os.path.abspath("results/{is_grouped}{condition}/cromwell.log")
     shell:
-        "caper run {caper_params} {config[wdl]} -i {input.json} --out-dir results/{wildcards.is_grouped}{wildcards.condition} -m {output} "
-        "> {log} 2>&1"
+        """
+caper run {caper_params} {config[wdl]} \
+    -i {input.json} \
+    --out-dir {params.outdir}/results/{is_grouped}{condition} \
+    -m {params.outdir}/{output} > {params.outdir}{log} 2>&1
+
+if {params.use_tmpdir}
+then
+    cp -r {params.outdir}/results/{is_grouped}{condition} {params.snakedir}/results/{is_grouped}{condition}
+fi
+"""
 
 
 def make_json_from_template(condition, json_out_file):

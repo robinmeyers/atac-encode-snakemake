@@ -174,7 +174,7 @@ rule run_cromwell_workflow:
         done = "results{is_grouped}{condition}/success.done"
     log: "results/{is_grouped}{condition}/cromwell.log"
     resources:
-        mem = "2G"
+        mem = "3G"
     params:
         snakedir = os.getcwd(),
         use_tmpdir = "true" if config['use_tmpdir'] else "false",
@@ -186,7 +186,7 @@ rule run_cromwell_workflow:
         """
 if {params.use_tmpdir}
 then
-    echo "temporarily writing output to $TMPDIR/results/{wildcards.is_grouped}{wildcards.condition}"
+    echo "temporarily writing output to {params.outdir}/results/{wildcards.is_grouped}{wildcards.condition}
 fi
 
 caper run {caper_options} {config[wdl]} \

@@ -182,11 +182,10 @@ rule run_cromwell_workflow:
         # json = lambda wildcards, input: os.path.abspath(input.json)
         # wdl = os.path.abspath(config[wdl]),
         # log = os.path.abspath("results/{is_grouped}{condition}/cromwell.log")
-    shell:
-        """
+    shell: """
 if {params.use_tmpdir}
 then
-    echo "temporarily writing output to {params.outdir}/results/{wildcards.is_grouped}{wildcards.condition}
+    echo "temporarily writing output to {params.outdir}/results/{wildcards.is_grouped}{wildcards.condition}"
 fi
 
 caper run {caper_options} {config[wdl]} \
@@ -207,7 +206,6 @@ else
     echo "cromwell workflow failed. Inspect log at {log}"
     exit 1
 fi
-
 """
 
 

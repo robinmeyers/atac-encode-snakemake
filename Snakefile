@@ -171,7 +171,7 @@ rule run_cromwell_workflow:
     input: unpack(cromwell_inputs)
     output:
         metadata = "results/{is_grouped}{condition}/atac/metadata.json",
-        done = "results{is_grouped}{condition}/success.done"
+        done = "results/{is_grouped}{condition}/success.done"
     log: "results/{is_grouped}{condition}/cromwell.log"
     resources:
         mem = "3G"
@@ -192,7 +192,7 @@ caper run {caper_options} {config[wdl]} \
     -i {input.json} \
     --out-dir {params.outdir}/results/{wildcards.is_grouped}{wildcards.condition} \
     --tmp-dir {params.outdir}/results/{wildcards.is_grouped}{wildcards.condition}/tmp \
-    -m {params.outdir}/{output} > {log} 2>&1
+    -m {params.outdir}/{output.metadata} > {log} 2>&1
 
 if {params.use_tmpdir}
 then

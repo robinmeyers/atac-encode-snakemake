@@ -169,7 +169,9 @@ def cromwell_inputs(wildcards):
 
 rule run_cromwell_workflow:
     input: unpack(cromwell_inputs)
-    output: "results/{is_grouped}{condition}/atac/metadata.json"
+    output:
+        metadata = "results/{is_grouped}{condition}/atac/metadata.json",
+        done = "results{is_grouped}{condition}/success.done"
     log: "results/{is_grouped}{condition}/cromwell.log"
     resources:
         mem = "2G"
@@ -197,6 +199,15 @@ if {params.use_tmpdir}
 then
     cp -r {params.outdir}/results/{wildcards.is_grouped}{wildcards.condition} {params.snakedir}/results/{wildcards.is_grouped}{wildcards.condition}
 fi
+
+if [ -e {output.metadata} ] && grep -q '"status": "Succeeded"' {output.metadata}
+then
+    touch {output.done}
+else
+    echo "cromwell workflow failed. Inspect log at {log}"
+    exit 1
+fi
+
 """
 
 

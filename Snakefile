@@ -150,7 +150,7 @@ rule collect_tag_align_files:
     input: "results/{condition}/qc/qc.json"
     output: "results/{condition}/align/{condition}.tagAlign.gz"
     shell:
-        "cat results/{wildcards.condition}/align/rep*/*.trim.merged.nodup.no_chrM_MT.tn5.tagAlign.gz > {output};"
+        "cat results/{wildcards.condition}/align/rep*/*.no_chrM_MT.tn5.tagAlign.gz > {output};"
 
 
 rule croo_collect_metadata:

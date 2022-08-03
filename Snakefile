@@ -243,9 +243,9 @@ def make_grouped_json_from_template(grouping, tagalign_file, json_out_file):
     sample_json['atac.description'] = group_dict['description']
     sample_json['atac.tas'] = [tagalign_file]
     sample_json['atac.true_rep_only'] = True
-    sample_json['atac.call_peak_mem_mb'] =32000
+    # sample_json['atac.call_peak_mem_factor'] = 16.0
     sample_json['atac.call_peak_time_hr'] = 48
-    sample_json['atac.macs2_signal_track_mem_mb'] = 32000
+    # sample_json['atac.macs2_signal_track_mem_factor'] = 16.0
     sample_json['atac.macs2_signal_track_time_hr'] = 48
 
     json.dump(sample_json, json_out, indent=4)

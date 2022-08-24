@@ -1,0 +1,15 @@
+name: atac-encode-snakemake
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+dependencies:
+  - snakemake
+  - biopython
+  - numpy
+  - pandas
+  - caper
+  - croo
+  - pip
+  - pip:
+    - qc2tsv

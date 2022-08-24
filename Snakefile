@@ -135,6 +135,25 @@ rule all:
     run:
         print("workflow complete!")
 
+rule clean_up:
+    input:
+        qc_all = "results/qc.tsv",
+        qc = "results/{is_grouped}{condition}/qc/qc.json"
+    output: "results/{is_grouped}{condition}/clean.done"
+    params: 
+        dir = "results/{is_grouped}{condition}"
+    shell: """
+        if [ -d {params.dir}/align ]
+        then
+            find {params.dir}/align -type l -exec sed -i '' {{}} \;
+        fi
+        find {params.dir}/signal -type l -exec sed -i '' {{}} \;
+        find {params.dir}/peak -type l -exec sed -i '' {{}} \;
+        find {params.dir}/qc -type l -exec sed -i '' {{}} \;
+
+        touch {output}
+        """
+
 rule gather_qc:
     input:
         [os.path.join("results", c, "qc/qc.json") for c in list(conditions_dict)],

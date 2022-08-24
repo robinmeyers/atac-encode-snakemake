@@ -124,6 +124,8 @@ def get_target_files(wildcards):
     target_files = ["results/qc.tsv"]
     target_files = target_files + [os.path.join("results", c, "qc/qc.json") for c in list(conditions_dict)]
     target_files = target_files + [os.path.join("results/groups", g, "qc/qc.json") for g in list(groupings_dict)]
+    target_files = target_files + [os.path.join("results", c, "clean.done") for c in list(conditions_dict)]
+    target_files = target_files + [os.path.join("results/groups", g, "clean.done") for g in list(groupings_dict)]
 
     # target_files = target_files + [os.path.join("results", c, "croo_finished") for c in condition_list]
 
@@ -150,6 +152,8 @@ rule clean_up:
         find {params.dir}/signal -type l -exec sed -i '' {{}} \;
         find {params.dir}/peak -type l -exec sed -i '' {{}} \;
         find {params.dir}/qc -type l -exec sed -i '' {{}} \;
+
+        rm -rf {params.dir}/atac/*/*
 
         touch {output}
         """

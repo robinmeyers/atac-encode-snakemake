@@ -8,8 +8,9 @@ dependencies:
   - biopython
   - numpy
   - pandas
-  - caper
-  - croo
+  - openjdk
   - pip
   - pip:
+    - caper
+    - croo
     - qc2tsv

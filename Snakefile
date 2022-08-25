@@ -4,6 +4,7 @@
 
 import os
 import glob
+import math
 import numpy as np
 import pandas as pd
 from snakemake.utils import validate, min_version
@@ -197,7 +198,7 @@ rule run_cromwell_workflow:
         done = "results/{is_grouped}{condition}/success.done"
     log: "results/{is_grouped}{condition}/cromwell.log"
     resources:
-        mem = "3G"
+        mem_mb = "4000"
     params:
         snakedir = os.getcwd(),
         use_tmpdir = "true" if config['use_tmpdir'] else "false",
@@ -282,7 +283,13 @@ rule make_grouped_json_input:
 rule merge_grouped_tagalign:
     input: lambda wildcards: [os.path.join("results", c, "align", c + ".tagAlign.gz") for c in groupings_dict[wildcards.group]['conditions']]
     output: "results/groups/{group}/{group}.grouped.tagAlign.gz"
-    shell: "cat {input} > {output}"
-
+    run:
+        n_files = len(input)
+        max_size = config['max_group_align_size']
+        n_lines = math.floor(max_size/n_files)
+        print(n_lines)
+        for file in input:
+            print(file)
+            shell(f"gunzip -c {file} | shuf -n {n_lines} | gzip -c >> {output}")
 
 

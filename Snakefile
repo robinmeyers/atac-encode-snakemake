@@ -198,7 +198,7 @@ rule run_cromwell_workflow:
         done = "results/{is_grouped}{condition}/success.done"
     log: "results/{is_grouped}{condition}/cromwell.log"
     resources:
-        mem_mb = "4000"
+        mem_mb = 4000
     params:
         snakedir = os.getcwd(),
         use_tmpdir = "true" if config['use_tmpdir'] else "false",

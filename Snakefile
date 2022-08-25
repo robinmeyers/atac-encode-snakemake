@@ -139,9 +139,7 @@ rule all:
         print("workflow complete!")
 
 rule clean_up:
-    input:
-        qc_all = "results/qc.tsv",
-        qc = "results/{is_grouped}{condition}/qc/qc.json"
+    input: "results/{is_grouped}{condition}/qc/qc.json"
     output: "results/{is_grouped}{condition}/clean.done"
     params: 
         dir = "results/{is_grouped}{condition}"

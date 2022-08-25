@@ -285,9 +285,7 @@ rule merge_grouped_tagalign:
         n_files = len(input)
         max_size = config['max_group_align_size']
         n_lines = math.floor(max_size/n_files)
-        print(n_lines)
         for file in input:
-            print(file)
             shell(f"gunzip -c {file} | shuf -n {n_lines} | gzip -c >> {output}")
 
 

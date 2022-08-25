@@ -212,7 +212,7 @@ then
     echo "temporarily writing output to {params.outdir}/results/{wildcards.is_grouped}{wildcards.condition}"
 fi
 
-caper run {caper_options} {config[wdl]} \
+caper run --conda {caper_options} {config[wdl]} \
     -i {input.json} \
     --out-dir {params.outdir}/results/{wildcards.is_grouped}{wildcards.condition} \
     --tmp-dir {params.outdir}/results/{wildcards.is_grouped}{wildcards.condition}/tmp \

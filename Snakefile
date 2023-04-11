@@ -174,7 +174,7 @@ rule merge_bams:
     output: "results/merged_bams/{condition}.merged.bam"
     threads: 4
     shell:
-        "samtools merge -@ {threads} -o {output} results/{wildcards.condition}/align/rep*/*.no_chrM_MT.tn5.tagAlign.gz; "
+        "samtools merge -@ {threads} -o {output} results/{wildcards.condition}/align/rep*/*.trim.merged.nodup.no_chrM_MT.bam; "
         "samtools index {output}"
 
 rule hmmratac:

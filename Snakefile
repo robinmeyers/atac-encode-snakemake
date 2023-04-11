@@ -184,6 +184,7 @@ rule nucleoatac:
         bam = "results/merged_bams/{condition}.merged.bam",
         consensus = "results/groups/consensus/qc/qc.json"
     output: "results/nucleoatac/{condition}/{condition}.nucpos.bed.gz"
+    log: "results/nucleoatac/{condition}/log"
     conda: "envs/nucleoatac.yaml"
     params:
         bam = os.path.abspath("results/merged_bams/{condition}.merged.bam"),
@@ -193,7 +194,7 @@ rule nucleoatac:
     threads: 4
     shell:"""
 cd results/nucleoatac/{wildcards.condition}
-nucleoatac run --bed {params.bed} --bam {params.bam} --out {wildcards.condition} --fasta ~/storage/genomes/Homo_sapiens/NCBI/GRCh38/Sequence/WholeGenomeFasta/genome.fa --cores 4 --write_all
+nucleoatac run --bed {params.bed} --bam {params.bam} --out {wildcards.condition} --fasta ~/storage/genomes/Homo_sapiens/NCBI/GRCh38/Sequence/WholeGenomeFasta/genome.fa --cores 4 --write_all > log 2>&1
 """
 
 rule hmmratac:

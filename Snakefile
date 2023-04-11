@@ -128,6 +128,8 @@ def get_target_files(wildcards):
     target_files = target_files + [os.path.join("results", c, "clean.done") for c in list(conditions_dict)]
     target_files = target_files + [os.path.join("results/groups", g, "clean.done") for g in list(groupings_dict)]
 
+    target_files = target_files + [os.path.join("results/hmmratac", c, "NA.log") for c in list(conditions_dict)]
+
     # target_files = target_files + [os.path.join("results", c, "croo_finished") for c in condition_list]
 
     return target_files
@@ -166,6 +168,28 @@ rule gather_qc:
     shell:
         "qc2tsv {input} > {output}"
 
+
+rule merge_bams:
+    input: "results/{condition}/qc/qc.json"
+    output: "results/merged_bams/{condition}.merged.bam"
+    threads: 4
+    shell:
+        "samtools merge -@ {threads} -o {output} results/{wildcards.condition}/align/rep*/*.no_chrM_MT.tn5.tagAlign.gz; "
+        "samtools index {output}"
+
+rule hmmratac:
+    input: "results/merged_bams/{condition}.merged.bam"
+    output: "results/hmmratac/{condition}/NA.log"
+    conda: "envs/hmmratac.yaml"
+    params:
+        input = os.path.abspath("results/merged_bams/{condition}.merged.bam")
+    resources:
+        mem_mb = 64000
+    shell:"""
+cd results/hmmratac/{wildcards.condition}
+samtools view -H {params.input} | perl -ne 'if(/^@SQ.*?SN:(\w+)\s+LN:(\d+)/){{print $1,"\t",$2,"\n"}}' > genome.info 
+HMMRATAC -Xmx64000m -b {params.input} -i {params.input}.bai -g genome.info
+"""
 
 
 rule collect_tag_align_files:

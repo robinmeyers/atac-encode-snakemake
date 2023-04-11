@@ -8,8 +8,15 @@ template_json: sample_template.json
 fastq_dirs:
   - '/home/rmmeyers/workflows/atac-encode-snakemake/.test/fastqs/'
 
-grouping_columns:
-  - Timepoint
+make_consensus: True
+
+# grouping_columns:
+#   - Timepoint
+
+max_group_align_size: 200000000
 
 # % will be replaced with the character '1' and '2' for reads 1 and 2 respectively
 fastq_suffix: _*R%*.fastq.gz
+
+local_main_job: False
+use_tmpdir: False

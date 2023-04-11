@@ -129,6 +129,7 @@ def get_target_files(wildcards):
     target_files = target_files + [os.path.join("results/groups", g, "clean.done") for g in list(groupings_dict)]
 
     target_files = target_files + [os.path.join("results/hmmratac", c, c + ".log") for c in list(conditions_dict)]
+    target_files = target_files + [os.path.join("results/nucleoatac", c, c + ".nucpos.bed.gz") for c in list(conditions_dict)]
 
     # target_files = target_files + [os.path.join("results", c, "croo_finished") for c in condition_list]
 
@@ -176,6 +177,24 @@ rule merge_bams:
     shell:
         "samtools merge -@ {threads} -o {output} results/{wildcards.condition}/align/rep*/*.trim.merged.nodup.no_chrM_MT.bam; "
         "samtools index {output}"
+
+
+rule nucleoatac:
+    input:
+        bam = "results/merged_bams/{condition}.merged.bam",
+        consensus = "results/groups/consensus/qc/qc.json"
+    output: "results/nucleoatac/{condition}/{condition}.nucpos.bed.gz"
+    conda: "envs/nucleoatac.yaml"
+    params:
+        bam = os.path.abspath("results/merged_bams/{condition}.merged.bam"),
+        bed = os.path.abspath("results/groups/consensus/peak/rep1/consensus.grouped.pval0.01.300K.narrowPeak.gz")
+    resources:
+        mem_mb = 32000
+    threads: 4
+    shell:"""
+cd results/nucleoatac/{wildcards.condition}
+nucleoatac run --bed {params.bed} --bam {params.bam} --out {wildcards.condition} --fasta ~/storage/genomes/Homo_sapiens/NCBI/GRCh38/Sequence/WholeGenomeFasta/genome.fa --cores 4 --write_all
+"""
 
 rule hmmratac:
     input: "results/merged_bams/{condition}.merged.bam"

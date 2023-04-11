@@ -128,7 +128,7 @@ def get_target_files(wildcards):
     target_files = target_files + [os.path.join("results", c, "clean.done") for c in list(conditions_dict)]
     target_files = target_files + [os.path.join("results/groups", g, "clean.done") for g in list(groupings_dict)]
 
-    target_files = target_files + [os.path.join("results/hmmratac", c, "NA.log") for c in list(conditions_dict)]
+    target_files = target_files + [os.path.join("results/hmmratac", c, c + ".log") for c in list(conditions_dict)]
 
     # target_files = target_files + [os.path.join("results", c, "croo_finished") for c in condition_list]
 
@@ -179,7 +179,7 @@ rule merge_bams:
 
 rule hmmratac:
     input: "results/merged_bams/{condition}.merged.bam"
-    output: "results/hmmratac/{condition}/NA.log"
+    output: "results/hmmratac/{condition}/{condition}.log"
     conda: "envs/hmmratac.yaml"
     params:
         input = os.path.abspath("results/merged_bams/{condition}.merged.bam")
@@ -187,8 +187,8 @@ rule hmmratac:
         mem_mb = 64000
     shell:"""
 cd results/hmmratac/{wildcards.condition}
-samtools view -H {params.input} | perl -ne 'if(/^@SQ.*?SN:(\w+)\s+LN:(\d+)/){{print $1,"\t",$2,"\n"}}' > genome.info 
-HMMRATAC -Xmx64000m -b {params.input} -i {params.input}.bai -g genome.info
+samtools view -H {params.input} | perl -ne 'if(/^@SQ.*?SN:(\w+)\s+LN:(\d+)/){{print $1,"\\t",$2,"\\n"}}' > genome.info
+HMMRATAC -Xmx64000m -b {params.input} -i {params.input}.bai -g genome.info -o {wildcards.condition}
 """
 
 

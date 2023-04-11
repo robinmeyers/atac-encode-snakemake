@@ -184,11 +184,11 @@ rule hmmratac:
     params:
         input = os.path.abspath("results/merged_bams/{condition}.merged.bam")
     resources:
-        mem_mb = 64000
+        mem_mb = 32000
     shell:"""
 cd results/hmmratac/{wildcards.condition}
 samtools view -H {params.input} | perl -ne 'if(/^@SQ.*?SN:(\w+)\s+LN:(\d+)/){{print $1,"\\t",$2,"\\n"}}' > genome.info
-HMMRATAC -Xmx64000m -b {params.input} -i {params.input}.bai -g genome.info -o {wildcards.condition}
+HMMRATAC -Xmx32000m -b {params.input} -i {params.input}.bai -g genome.info -o {wildcards.condition}
 """
 
 

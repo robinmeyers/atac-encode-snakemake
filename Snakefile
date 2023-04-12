@@ -178,23 +178,38 @@ rule merge_bams:
         "samtools merge -@ {threads} -o {output} results/{wildcards.condition}/align/rep*/*.trim.merged.nodup.no_chrM_MT.bam; "
         "samtools index {output}"
 
+rule all_nucleoatac:
+    input: expand("results/nucleoatac/{condition}/{condition}.nucpos.bed.gz", condition = list(conditions_dict))
+
+
+rule slop_consensus_peaks:
+    input: "results/groups/consensus/qc/qc.json"
+    output: "results/nucleoatac/consensus_peaks.bed"
+    params:
+        chrom_sizes = config['chrom_sizes']
+    shell: """
+bedtools slop -i results/groups/consensus/peak/rep1/consensus.grouped.pval0.01.300K.narrowPeak.gz -g {params.chrom_sizes} -b 1000 > {output}.tmp
+bedtools merge -i {output}.tmp > {output}
+"""
+
 
 rule nucleoatac:
     input:
         bam = "results/merged_bams/{condition}.merged.bam",
-        consensus = "results/groups/consensus/qc/qc.json"
+        consensus = "results/nucleoatac/consensus_peaks.bed"
     output: "results/nucleoatac/{condition}/{condition}.nucpos.bed.gz"
     log: "results/nucleoatac/{condition}/log"
     conda: "envs/nucleoatac.yaml"
     params:
         bam = os.path.abspath("results/merged_bams/{condition}.merged.bam"),
-        bed = os.path.abspath("results/groups/consensus/peak/rep1/consensus.grouped.pval0.01.300K.narrowPeak.gz")
+        bed = os.path.abspath("results/nucleoatac/consensus_peaks.bed"),
+        genome_fasta = config['genome_fasta']
     resources:
         mem_mb = 32000
     threads: 4
     shell:"""
 cd results/nucleoatac/{wildcards.condition}
-nucleoatac run --bed {params.bed} --bam {params.bam} --out {wildcards.condition} --fasta ~/storage/genomes/Homo_sapiens/NCBI/GRCh38/Sequence/WholeGenomeFasta/genome.fa --cores 4 --write_all > log 2>&1
+nucleoatac run --bed {params.bed} --bam {params.bam} --out {wildcards.condition} --fasta {params.genome_fasta} --cores {threads} --write_all > log
 """
 
 rule hmmratac:
@@ -202,13 +217,14 @@ rule hmmratac:
     output: "results/hmmratac/{condition}/{condition}.log"
     conda: "envs/hmmratac.yaml"
     params:
-        input = os.path.abspath("results/merged_bams/{condition}.merged.bam")
+        input = os.path.abspath("results/merged_bams/{condition}.merged.bam"),
+        chrom_sizes = config['chrom_sizes']
     resources:
         mem_mb = 32000
     shell:"""
 cd results/hmmratac/{wildcards.condition}
-samtools view -H {params.input} | perl -ne 'if(/^@SQ.*?SN:(\w+)\s+LN:(\d+)/){{print $1,"\\t",$2,"\\n"}}' > genome.info
-HMMRATAC -Xmx32000m -b {params.input} -i {params.input}.bai -g genome.info -o {wildcards.condition}
+# samtools view -H {params.input} | perl -ne 'if(/^@SQ.*?SN:(\w+)\s+LN:(\d+)/){{print $1,"\\t",$2,"\\n"}}' > genome.info
+HMMRATAC -Xmx32000m -b {params.input} -i {params.input}.bai -g {params.chrom_sizes} -o {wildcards.condition}
 """
 
 

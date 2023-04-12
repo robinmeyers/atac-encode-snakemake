@@ -20,3 +20,6 @@ fastq_suffix: _*R%*.fastq.gz
 
 local_main_job: False
 use_tmpdir: False
+
+genome_fasta: /oak/stanford/groups/khavari/users/rmmeyers/genomes/Homo_sapiens/hg38_atac/GRCh38_no_alt_analysis_set_GCA_000001405.15.fasta
+chrom_sizes: /oak/stanford/groups/khavari/users/rmmeyers/genomes/Homo_sapiens/hg38_atac/GRCh38_EBV.chrom.sizes.tsv

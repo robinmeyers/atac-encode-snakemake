@@ -129,7 +129,9 @@ def get_target_files(wildcards):
     target_files = target_files + [os.path.join("results/groups", g, "clean.done") for g in list(groupings_dict)]
 
     target_files = target_files + [os.path.join("results/hmmratac", c, c + ".log") for c in list(conditions_dict)]
-    target_files = target_files + [os.path.join("results/nucleoatac", c, c + ".nucpos.bed.gz") for c in list(conditions_dict)]
+    target_files = target_files + [os.path.join("results/nucleoatac", c, c + ".ins.bigWig") for c in list(conditions_dict)]
+    target_files = target_files + [os.path.join("results/nucleoatac", c, c + ".occ.bigWig") for c in list(conditions_dict)]
+    target_files = target_files + [os.path.join("results/nucleoatac", c, c + ".nucleoatac_signal.bigWig") for c in list(conditions_dict)]
 
     # target_files = target_files + [os.path.join("results", c, "croo_finished") for c in condition_list]
 
@@ -192,12 +194,28 @@ bedtools slop -i results/groups/consensus/peak/rep1/consensus.grouped.pval0.01.3
 bedtools merge -i {output}.tmp > {output}
 """
 
+rule nucleoatac_bedgraph_to_bigwig:
+    input: "results/nucleoatac/{condition}/{condition}.{type}.bedgraph.gz",
+    output: "results/nucleoatac/{condition}/{condition}.{type}.bigWig"
+    params:
+        unzipped = "results/nucleoatac/{condition}/{condition}.{type}.bedgraph",
+        chrom_sizes = config['chrom_sizes']
+    shell: """
+gunzip {input}
+bedGraphToBigWig {params.unzipped} {params.chrom_sizes} {output}
+gzip {params.unzipped}
+"""
+
 
 rule nucleoatac:
     input:
         bam = "results/merged_bams/{condition}.merged.bam",
         consensus = "results/nucleoatac/consensus_peaks.bed"
-    output: "results/nucleoatac/{condition}/{condition}.nucpos.bed.gz"
+    output:
+        "results/nucleoatac/{condition}/{condition}.nucpos.bed.gz",
+        "results/nucleoatac/{condition}/{condition}.ins.bedgraph.gz",
+        "results/nucleoatac/{condition}/{condition}.occ.bedgraph.gz",
+        "results/nucleoatac/{condition}/{condition}.nucleoatac_signal.bedgraph.gz"
     log: "results/nucleoatac/{condition}/log"
     conda: "envs/nucleoatac.yaml"
     params:

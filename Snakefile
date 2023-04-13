@@ -188,7 +188,7 @@ rule slop_consensus_peaks:
     params:
         chrom_sizes = config['chrom_sizes']
     shell: """
-bedtools slop -i results/groups/consensus/peak/rep1/consensus.grouped.pval0.01.300K.narrowPeak.gz -g {params.chrom_sizes} -b 1000 > {output}.tmp
+bedtools slop -i results/groups/consensus/peak/rep1/consensus.grouped.pval0.01.300K.narrowPeak.gz -g {params.chrom_sizes} -b 1000 | sort -k1,1 -k2,2n > {output}.tmp
 bedtools merge -i {output}.tmp > {output}
 """
 

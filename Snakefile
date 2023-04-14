@@ -181,7 +181,10 @@ rule merge_bams:
         "samtools index {output}"
 
 rule all_nucleoatac:
-    input: expand("results/nucleoatac/{condition}/{condition}.nucpos.bed.gz", condition = list(conditions_dict))
+    input:
+        expand("results/nucleoatac/{condition}/{condition}.occ.bigwig", condition = list(conditions_dict)),
+        expand("results/nucleoatac/{condition}/{condition}.ins.bigwig", condition = list(conditions_dict)),
+        expand("results/nucleoatac/{condition}/{condition}.nucleoatac_signal.bigwig", condition = list(conditions_dict))
 
 
 rule slop_consensus_peaks:
@@ -190,7 +193,7 @@ rule slop_consensus_peaks:
     params:
         chrom_sizes = config['chrom_sizes']
     shell: """
-bedtools slop -i results/groups/consensus/peak/rep1/consensus.grouped.pval0.01.300K.narrowPeak.gz -g {params.chrom_sizes} -b 1000 | sort -k1,1 -k2,2n > {output}.tmp
+bedtools slop -i results/groups/consensus/peak/rep1/consensus.grouped.pval0.01.300K.narrowPeak.gz -g {params.chrom_sizes} -b 500 | sort -k1,1 -k2,2n > {output}.tmp
 bedtools merge -i {output}.tmp > {output}
 """
 

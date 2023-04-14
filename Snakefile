@@ -39,7 +39,7 @@ r2_fastq_suffix = config['fastq_suffix'].replace('%', '2')
 
 caper_options = config['caper_options'] if 'caper_options' in config else ""
 
-localrules: all, make_json_input, make_grouped_json_input, merge_grouped_tagalign, collect_tag_align_files, croo_collect_metadata, gather_qc
+localrules: all, make_json_input, make_grouped_json_input, merge_grouped_tagalign, croo_collect_metadata, gather_qc
 
 
 

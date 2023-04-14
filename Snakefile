@@ -182,9 +182,9 @@ rule merge_bams:
 
 rule all_nucleoatac:
     input:
-        expand("results/nucleoatac/{condition}/{condition}.occ.bigwig", condition = list(conditions_dict)),
-        expand("results/nucleoatac/{condition}/{condition}.ins.bigwig", condition = list(conditions_dict)),
-        expand("results/nucleoatac/{condition}/{condition}.nucleoatac_signal.bigwig", condition = list(conditions_dict))
+        expand("results/nucleoatac/{condition}/{condition}.occ.bigWig", condition = list(conditions_dict)),
+        expand("results/nucleoatac/{condition}/{condition}.ins.bigWig", condition = list(conditions_dict)),
+        expand("results/nucleoatac/{condition}/{condition}.nucleoatac_signal.bigWig", condition = list(conditions_dict))
 
 
 rule slop_consensus_peaks:

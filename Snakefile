@@ -204,9 +204,9 @@ rule nucleoatac_bedgraph_to_bigwig:
         unzipped = "results/nucleoatac/{condition}/{condition}.{type}.bedgraph",
         chrom_sizes = config['chrom_sizes']
     shell: """
-gunzip {input}
+gunzip -c {input} > {params.unzipped}
 bedGraphToBigWig {params.unzipped} {params.chrom_sizes} {output}
-gzip {params.unzipped}
+rm {params.unzipped}
 """
 
 

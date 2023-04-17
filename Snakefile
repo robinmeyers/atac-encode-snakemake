@@ -174,11 +174,11 @@ rule gather_qc:
 
 
 rule merge_bams:
-    input: "results/{condition}/qc/qc.json"
+    input: "results/{condition}/clean.done"
     output: "results/merged_bams/{condition}.merged.bam"
     threads: 4
     shell:
-        "samtools merge -@ {threads} -o {output} results/{wildcards.condition}/align/rep*/*.trim.merged.nodup.no_chrM_MT.bam; "
+        "samtools merge -@ {threads} -o {output} results/{wildcards.condition}/align/rep*/*.nodup.no_chrM_MT.bam; "
         "samtools index {output}"
 
 rule all_nucleoatac:

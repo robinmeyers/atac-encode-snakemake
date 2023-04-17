@@ -132,6 +132,7 @@ def get_target_files(wildcards):
     target_files = target_files + [os.path.join("results/nucleoatac", c, c + ".ins.bigWig") for c in list(conditions_dict)]
     target_files = target_files + [os.path.join("results/nucleoatac", c, c + ".occ.bigWig") for c in list(conditions_dict)]
     target_files = target_files + [os.path.join("results/nucleoatac", c, c + ".nucleoatac_signal.bigWig") for c in list(conditions_dict)]
+    target_files = target_files + [os.path.join("results/nucleoatac", c, c + ".nucleoatac_signal.smooth.bigWig") for c in list(conditions_dict)]
 
     # target_files = target_files + [os.path.join("results", c, "croo_finished") for c in condition_list]
 
@@ -184,7 +185,8 @@ rule all_nucleoatac:
     input:
         expand("results/nucleoatac/{condition}/{condition}.occ.bigWig", condition = list(conditions_dict)),
         expand("results/nucleoatac/{condition}/{condition}.ins.bigWig", condition = list(conditions_dict)),
-        expand("results/nucleoatac/{condition}/{condition}.nucleoatac_signal.bigWig", condition = list(conditions_dict))
+        expand("results/nucleoatac/{condition}/{condition}.nucleoatac_signal.bigWig", condition = list(conditions_dict)),
+        expand("results/nucleoatac/{condition}/{condition}.nucleoatac_signal.smooth.bigWig", condition = list(conditions_dict))
 
 
 rule slop_consensus_peaks:

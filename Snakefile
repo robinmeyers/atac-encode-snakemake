@@ -39,7 +39,7 @@ r2_fastq_suffix = config['fastq_suffix'].replace('%', '2')
 
 caper_options = config['caper_options'] if 'caper_options' in config else ""
 
-localrules: all, make_json_input, make_grouped_json_input, merge_grouped_tagalign, croo_collect_metadata, gather_qc
+localrules: all #, make_json_input, make_grouped_json_input, merge_grouped_tagalign, croo_collect_metadata, gather_qc
 
 
 
@@ -364,6 +364,8 @@ rule make_grouped_json_input:
 rule merge_grouped_tagalign:
     input: lambda wildcards: [os.path.join("results", c, "align", c + ".tagAlign.gz") for c in groupings_dict[wildcards.group]['conditions']]
     output: "results/groups/{group}/{group}.grouped.tagAlign.gz"
+    resources:
+        mem_mb = 16000
     run:
         n_files = len(input)
         max_size = config['max_group_align_size']

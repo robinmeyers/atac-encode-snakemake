@@ -128,11 +128,11 @@ def get_target_files(wildcards):
     target_files = target_files + [os.path.join("results", c, "clean.done") for c in list(conditions_dict)]
     target_files = target_files + [os.path.join("results/groups", g, "clean.done") for g in list(groupings_dict)]
 
-    target_files = target_files + [os.path.join("results/hmmratac", c, c + ".log") for c in list(conditions_dict)]
-    target_files = target_files + [os.path.join("results/nucleoatac", c, c + ".ins.bigWig") for c in list(conditions_dict)]
-    target_files = target_files + [os.path.join("results/nucleoatac", c, c + ".occ.bigWig") for c in list(conditions_dict)]
-    target_files = target_files + [os.path.join("results/nucleoatac", c, c + ".nucleoatac_signal.bigWig") for c in list(conditions_dict)]
-    target_files = target_files + [os.path.join("results/nucleoatac", c, c + ".nucleoatac_signal.smooth.bigWig") for c in list(conditions_dict)]
+    # target_files = target_files + [os.path.join("results/hmmratac", c, c + ".log") for c in list(conditions_dict)]
+    # target_files = target_files + [os.path.join("results/nucleoatac", c, c + ".ins.bigWig") for c in list(conditions_dict)]
+    # target_files = target_files + [os.path.join("results/nucleoatac", c, c + ".occ.bigWig") for c in list(conditions_dict)]
+    # target_files = target_files + [os.path.join("results/nucleoatac", c, c + ".nucleoatac_signal.bigWig") for c in list(conditions_dict)]
+    # target_files = target_files + [os.path.join("results/nucleoatac", c, c + ".nucleoatac_signal.smooth.bigWig") for c in list(conditions_dict)]
 
     # target_files = target_files + [os.path.join("results", c, "croo_finished") for c in condition_list]
 

@@ -279,6 +279,7 @@ rule run_cromwell_workflow:
         done = "results/{is_grouped}{condition}/success.done"
     log: "results/{is_grouped}{condition}/cromwell.log"
     resources:
+        time = "2-0:00:00",
         mem_mb = 4000
     params:
         snakedir = os.getcwd(),
